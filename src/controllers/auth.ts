@@ -7,6 +7,7 @@ import { BadRequestExceptions } from "../exceptions/badrequest"
 import { ErrorCodes } from "../exceptions/root"
 import { unprocessableEntity } from "../exceptions/validation"
 import { SignupSchema } from "../schema/users"
+import { NotFound } from "../exceptions/notFound"
 
 export const Signup=async(req:Request,res:Response,next:NextFunction)=>{
 
@@ -45,7 +46,9 @@ export const Signin=async(req:Request,res:Response)=>{
  
  
     if (!user){
-      throw Error("user not found ")
+    //   throw Error("user not found ")
+    throw new NotFound('user not Found',ErrorCodes.USER_NOT_FOUND)
+
     // new BadRequestExceptions('user not found',ErrorCodes.USER_NOT_FOUND)
     }
  
@@ -56,7 +59,8 @@ export const Signin=async(req:Request,res:Response)=>{
     if (!compareSync(password,user.password))
 
 {
-    throw Error("Incorrect password")    
+    // throw Error("Incorrect password")    
+    throw new BadRequestExceptions('Incorrect password"',ErrorCodes.INCORRECT_PASSWORD)
     
 }   
 
@@ -68,3 +72,18 @@ const token =jwt.sign({
 
 res.json({user,token})
  }
+
+
+
+
+
+ //me
+
+
+
+ export const me =async(req:Request,res:Response)=>{
+
+res.json(req.user)
+
+ }
+
