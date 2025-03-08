@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -18,6 +19,14 @@ enum Role {
   USER
 }
 
+
+enum OrderEventStatus {
+  PENDING
+  ACCEPTED
+  OUT_FOR_DELIVERY
+  DELIVERD
+  CANCELLED
+}
 model User {
   id Int @id @default(autoincrement())
   name String
@@ -29,6 +38,8 @@ model User {
   updatedAt DateTime @updatedAt 
   role Role @default(USER)
   Addresses Address []
+  cartItems CartItem[]
+  orders Order[]
 
   @@map("users")
 }
@@ -43,6 +54,8 @@ model Product {
   tags String
   createdAt DateTime @default(now()) 
   updatedAt DateTime @updatedAt 
+  cartItems CartItem[]
+  orders OrderProduct[]
 
 
   @@map("products")
@@ -65,4 +78,68 @@ user User @relation(fields: [userId],references: [id])
 
   @@map("Address")
 }
+
+
+
+
+model CartItem{
+
+  id Int @id @default(autoincrement())
+  quantity Int
+  userId Int
+user User @relation(fields: [userId],references: [id])
+productId Int
+product Product @relation(fields: [productId],references: [id])
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+
+ @@map("cart_jjitem")
+}
+
+
+
+model Order{
+
+  id Int @id @default(autoincrement())
+  userId Int
+user User @relation(fields: [userId],references: [id])
+netAmount Decimal
+address String
+  status OrderEventStatus @default(PENDING)
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+  products OrderProduct[]
+  events OrderEvent[]
+
+ @@map("orders")
+}
+
+
+
+model OrderProduct{
+  id Int @id @default(autoincrement())
+  orderId Int
+order Order @relation(fields: [orderId],references: [id])
+productId Int
+product Product @relation(fields: [productId],references: [id])
+quantity Int
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+
+ @@map("order_products")
+}
+
+
+model OrderEvent{
+  id Int @id @default(autoincrement())
+  orderId Int
+  status OrderEventStatus @default(PENDING)
+order Order @relation(fields: [orderId],references: [id])
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+
+ @@map("order_eventss")
+}
+
+
 
